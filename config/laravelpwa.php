@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'name' => 'Estilo Americano',
+    'name' => env('APP_NAME', 'La bodegona'),
     'manifest' => [
-        'name' => env('APP_NAME', 'Estilo Americano'),
-        'short_name' => 'Estilo Americano GT',
+        'name' => env('APP_NAME', 'La bodegona'),
+        'short_name' => 'BODEGONA',
         'start_url' => '/',
         'background_color' => '#ffffff',
         'theme_color' => '#E5533D',
