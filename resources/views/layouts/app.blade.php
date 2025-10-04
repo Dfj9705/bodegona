@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
-    <link rel="shortcut icon" href="{{ asset('./images/ea_logo.jpeg') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('./images/bodegona_logo.png') }}" type="image/x-icon">
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
@@ -23,8 +23,8 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    <img src="{{ asset('./images/ea_logo.jpeg') }}" alt="" width="40" height="40">
-                    <span class="text-primary fw-bold">{{ config('app.name', 'Laravel') }}</span>
+                    <img src="{{ asset('./images/bodegona_logo.png') }}" alt="" width="40" height="40">
+                    <span class="fw-bold">{{ config('app.name', 'Laravel') }}</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>

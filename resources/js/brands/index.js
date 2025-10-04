@@ -21,21 +21,21 @@ btnModificar.disabled = true
 let counter = 1;
 let currentUpdateId;
 spinnerGuardar.style.display = 'none'
-const datatableBrand = new DataTable('#brandTable',{
-    data : null,
-    columns : [
+const datatableBrand = new DataTable('#brandTable', {
+    data: null,
+    columns: [
         {
-            title : 'No.',
-            render : () => counter ++
+            title: 'No.',
+            render: () => counter++
         },
         {
-            title : 'Nombre',
+            title: 'Nombre',
             data: 'name'
         },
         {
-            title : 'Opciones',
+            title: 'Opciones',
             data: 'id',
-            render : (data, type, row, meta) => {
+            render: (data, type, row, meta) => {
                 return `
                 <div class="btn-group-vertical" role="group" aria-label="option group">
                     <button class="btn btn-warning" data-id="${data}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#modalCreateBrand" ><i class="bi bi-ui-checks me-2"></i>Editar</button>
@@ -57,7 +57,7 @@ const saveBrand = async (event) => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const headers = new Headers({
         'X-CSRF-TOKEN': csrfToken,
-        'Accept' :'aplication/json',
+        'Accept': 'aplication/json',
     })
     const body = new FormData(formBrand)
     const config = {
@@ -67,14 +67,14 @@ const saveBrand = async (event) => {
         credentials: 'include'
     }
     try {
-        const respuesta = await fetch (url, config);
+        const respuesta = await fetch(url, config);
         const data = await respuesta.json();
         const elements = formBrand.querySelectorAll('input')
         const feedbacks = formBrand.querySelectorAll('[id$="Feedback"]')
-        elements.forEach(e=> e.classList.remove('is-invalid'))
+        elements.forEach(e => e.classList.remove('is-invalid'))
         feedbacks.forEach(f => f.textContent = '')
-        if(respuesta.status == 422){
-            const {errors} =data   
+        if (respuesta.status == 422) {
+            const { errors } = data
             for (const propiedad in errors) {
                 document.getElementById(propiedad).classList.add('is-invalid')
                 let contenido = '';
@@ -83,24 +83,24 @@ const saveBrand = async (event) => {
                 });
                 document.getElementById(propiedad + "Feedback").innerHTML = contenido
             }
-        }else if (respuesta.status == 200){
+        } else if (respuesta.status == 200) {
             Toast.fire({
-                icon : 'success',
-                title : 'Marca creada correctamente'
+                icon: 'success',
+                title: 'Marca creada correctamente'
             })
             getBrands();
             formBrand.reset();
             modalBrand.hide()
-        }else{
+        } else {
             Toast.fire({
-                icon : 'error',
-                title : 'Contacte al administrador'
+                icon: 'error',
+                title: 'Contacte al administrador'
             })
         }
 
         console.log(data);
     }
-    catch (error){
+    catch (error) {
         console.log(error);
     }
     spinnerGuardar.style.display = 'none'
@@ -111,7 +111,7 @@ const getBrands = async () => {
     const url = '/brands'
     const headers = new Headers({
         'Content-Type': 'application/json',
-        'Accept' :'aplication/json'
+        'Accept': 'aplication/json'
     })
     const config = {
         method: 'GET',
@@ -119,22 +119,22 @@ const getBrands = async () => {
         credentials: 'include'
     }
     try {
-        const respuesta = await fetch (url, config);
+        const respuesta = await fetch(url, config);
         const data = await respuesta.json();
-        const {brands} = data;
-        let pageInfo = datatableBrand.page.info(); 
-        let currentPage = pageInfo.page; 
+        const { brands } = data;
+        let pageInfo = datatableBrand.page.info();
+        let currentPage = pageInfo.page;
         let scrollPosition = window.scrollY;
         datatableBrand.clear().draw()
-        if(brands.length > 0){
+        if (brands.length > 0) {
             counter = 1;
             datatableBrand.rows.add(brands).draw();
             datatableBrand.page(currentPage).draw('page');
             window.scrollTo(0, scrollPosition);
-        }else{
+        } else {
             Toast.fire({
-                icon : 'info',
-                title : 'No se encontraron registros'
+                icon: 'info',
+                title: 'No se encontraron registros'
             })
         }
 
@@ -142,7 +142,7 @@ const getBrands = async () => {
     } catch (error) {
         console.log(error);
     }
-    
+
 }
 
 getBrands();
@@ -177,7 +177,7 @@ const updateBrand = async e => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const headers = new Headers({
         'X-CSRF-TOKEN': csrfToken,
-        'Accept' :'aplication/json',
+        'Accept': 'aplication/json',
     })
     const body = new FormData(formBrand)
     const config = {
@@ -187,15 +187,15 @@ const updateBrand = async e => {
         credentials: 'include'
     }
     try {
-        const respuesta = await fetch (url, config);
+        const respuesta = await fetch(url, config);
         const data = await respuesta.json();
         console.log(data);
         const elements = formBrand.querySelectorAll('input')
         const feedbacks = formBrand.querySelectorAll('[id$="Feedback"]')
-        elements.forEach(e=> e.classList.remove('is-invalid'))
+        elements.forEach(e => e.classList.remove('is-invalid'))
         feedbacks.forEach(f => f.textContent = '')
-        if(respuesta.status == 422){
-            const {errors} =data   
+        if (respuesta.status == 422) {
+            const { errors } = data
             for (const propiedad in errors) {
                 document.getElementById(propiedad).classList.add('is-invalid')
                 let contenido = '';
@@ -204,22 +204,22 @@ const updateBrand = async e => {
                 });
                 document.getElementById(propiedad + "Feedback").innerHTML = contenido
             }
-        }else if (respuesta.status == 200){
+        } else if (respuesta.status == 200) {
             Toast.fire({
-                icon : 'success',
-                title : 'Producto modificado correctamente'
+                icon: 'success',
+                title: 'Producto modificado correctamente'
             })
             getBrands();
             formBrand.reset();
             modalBrand.hide()
-        }else{
+        } else {
             Toast.fire({
-                icon : 'error',
-                title : 'Contacte al administrador'
+                icon: 'error',
+                title: 'Contacte al administrador'
             })
         }
     }
-    catch (error){
+    catch (error) {
         console.log(error);
     }
 }
@@ -227,20 +227,20 @@ const updateBrand = async e => {
 const deleteBrand = (e) => {
     let id = e.currentTarget.dataset.id
     Swal.fire({
-        icon : 'warning',
-        text : '¿Esta seguro que desea eliminar esta marca?',
+        icon: 'warning',
+        text: '¿Esta seguro que desea eliminar esta marca?',
         title: 'Confirmación',
         showCancelButton: true,
-        confirmButtonColor : '#591C32',
+        confirmButtonColor: '#E5533D',
         confirmButtonText: 'Si',
         cancelButtonText: 'Cancelar'
-    }).then( async (result) => {
-        if(result.isConfirmed){
+    }).then(async (result) => {
+        if (result.isConfirmed) {
             const url = `/brands/${id}`
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const headers = new Headers({
                 'X-CSRF-TOKEN': csrfToken,
-                'Accept' :'aplication/json',
+                'Accept': 'aplication/json',
             })
             const body = new FormData()
             const config = {
@@ -250,33 +250,33 @@ const deleteBrand = (e) => {
                 credentials: 'include'
             }
             try {
-                const respuesta = await fetch (url, config);
+                const respuesta = await fetch(url, config);
                 const data = await respuesta.json();
-        
+
                 console.log(data);
-                if (respuesta.status == 200){
+                if (respuesta.status == 200) {
                     Toast.fire({
-                        icon : 'success',
-                        title : 'Marca eliminada'
+                        icon: 'success',
+                        title: 'Marca eliminada'
                     })
                     getBrands();
-                }else{
+                } else {
                     Toast.fire({
-                        icon : 'error',
-                        title : 'Contacte al administrador'
+                        icon: 'error',
+                        title: 'Contacte al administrador'
                     })
                 }
             }
-            catch (error){
+            catch (error) {
                 console.log(error);
             }
         }
 
     })
-} 
+}
 
 formBrand.addEventListener('submit', saveBrand);
-datatableBrand.on('click', '.btn-warning', editBrand )
-datatableBrand.on('click', '.btn-danger', deleteBrand )
-modalBrandElement.addEventListener('show.bs.modal', resetearModal )
+datatableBrand.on('click', '.btn-warning', editBrand)
+datatableBrand.on('click', '.btn-danger', deleteBrand)
+modalBrandElement.addEventListener('show.bs.modal', resetearModal)
 btnModificar.addEventListener('click', updateBrand)

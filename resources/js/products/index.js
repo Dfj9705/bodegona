@@ -24,28 +24,28 @@ btnModificar.disabled = true
 let counter = 1;
 let currentUpdateId;
 spinnerGuardar.style.display = 'none'
-const datatableProduct = new DataTable('#productTable',{
-    data : null,
-    columns : [
+const datatableProduct = new DataTable('#productTable', {
+    data: null,
+    columns: [
         {
-            title : 'No.',
-            render : () => counter ++
+            title: 'No.',
+            render: () => counter++
         },
         {
-            title : 'Nombre',
+            title: 'Nombre',
             data: 'name'
         },
         {
-            title : 'Precio',
+            title: 'Precio',
             data: 'price',
-            render : (data) => `Q. ${data}`
+            render: (data) => `Q. ${data}`
         },
         {
-            title : 'Marca',
+            title: 'Marca',
             data: 'brand_name'
         },
         {
-            title : 'Descripcion',
+            title: 'Descripcion',
             data: 'description'
         },
         // {
@@ -56,9 +56,9 @@ const datatableProduct = new DataTable('#productTable',{
         //     }
         // },
         {
-            title : 'Opciones',
+            title: 'Opciones',
             data: 'id',
-            render : (data, type, row, meta) => {
+            render: (data, type, row, meta) => {
                 return `
                 <div class="btn-group-vertical" role="group" aria-label="option group">
                     <button class="btn btn-warning" data-id="${data}" data-name="${row.name}" data-brand="${row.brand_id}" data-price="${row.price}" data-description="${row.description}" data-bs-toggle="modal" data-bs-target="#modalCreateProduct" ><i class="bi bi-ui-checks me-2"></i>Editar</button>
@@ -80,7 +80,7 @@ const guardarProducto = async (event) => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const headers = new Headers({
         'X-CSRF-TOKEN': csrfToken,
-        'Accept' :'aplication/json',
+        'Accept': 'aplication/json',
     })
     const body = new FormData(formProduct)
     const config = {
@@ -90,15 +90,15 @@ const guardarProducto = async (event) => {
         credentials: 'include'
     }
     try {
-        const respuesta = await fetch (url, config);
+        const respuesta = await fetch(url, config);
         const data = await respuesta.json();
         console.log(data);
         const elements = formProduct.querySelectorAll('input')
         const feedbacks = formProduct.querySelectorAll('[id$="Feedback"]')
-        elements.forEach(e=> e.classList.remove('is-invalid'))
+        elements.forEach(e => e.classList.remove('is-invalid'))
         feedbacks.forEach(f => f.textContent = '')
-        if(respuesta.status == 422){
-            const {errors} =data   
+        if (respuesta.status == 422) {
+            const { errors } = data
             for (const propiedad in errors) {
                 document.getElementById(propiedad).classList.add('is-invalid')
                 let contenido = '';
@@ -107,24 +107,24 @@ const guardarProducto = async (event) => {
                 });
                 document.getElementById(propiedad + "Feedback").innerHTML = contenido
             }
-        }else if (respuesta.status == 200){
+        } else if (respuesta.status == 200) {
             Toast.fire({
-                icon : 'success',
-                title : 'Producto creado correctamente'
+                icon: 'success',
+                title: 'Producto creado correctamente'
             })
             getProducts();
             formProduct.reset();
             modalProduct.hide()
-        }else{
+        } else {
             Toast.fire({
-                icon : 'error',
-                title : 'Contacte al administrador'
+                icon: 'error',
+                title: 'Contacte al administrador'
             })
         }
 
         console.log(data);
     }
-    catch (error){
+    catch (error) {
         console.log(error);
     }
     spinnerGuardar.style.display = 'none'
@@ -135,7 +135,7 @@ const getProducts = async () => {
     const url = '/products'
     const headers = new Headers({
         'Content-Type': 'application/json',
-        'Accept' :'aplication/json',
+        'Accept': 'aplication/json',
     })
     const config = {
         method: 'GET',
@@ -143,22 +143,22 @@ const getProducts = async () => {
         credentials: 'include'
     }
     try {
-        const respuesta = await fetch (url, config);
+        const respuesta = await fetch(url, config);
         const data = await respuesta.json();
-        const {products} = data;
-        let pageInfo = datatableProduct.page.info(); 
-        let currentPage = pageInfo.page; 
+        const { products } = data;
+        let pageInfo = datatableProduct.page.info();
+        let currentPage = pageInfo.page;
         let scrollPosition = window.scrollY;
         datatableProduct.clear().draw()
-        if(products.length > 0){
+        if (products.length > 0) {
             counter = 1;
             datatableProduct.rows.add(products).draw();
             datatableProduct.page(currentPage).draw('page');
             window.scrollTo(0, scrollPosition);
-        }else{
+        } else {
             Toast.fire({
-                icon : 'info',
-                title : 'No se encontraron registros'
+                icon: 'info',
+                title: 'No se encontraron registros'
             })
         }
 
@@ -166,7 +166,7 @@ const getProducts = async () => {
     } catch (error) {
         console.log(error);
     }
-    
+
 }
 
 getProducts();
@@ -177,7 +177,7 @@ const getImages = async e => {
     const url = `/products/${id}/images`
     const headers = new Headers({
         'Content-Type': 'application/json',
-        'Accept' :'aplication/json',
+        'Accept': 'aplication/json',
     })
     const config = {
         method: 'GET',
@@ -185,10 +185,10 @@ const getImages = async e => {
         credentials: 'include'
     }
     try {
-        const respuesta = await fetch (url, config);
+        const respuesta = await fetch(url, config);
         const data = await respuesta.json();
         bodyCarousel.innerHTML = '';
-        if(data){
+        if (data) {
             const fragment = document.createDocumentFragment();
             let counter = 1;
             data.forEach(d => {
@@ -200,14 +200,14 @@ const getImages = async e => {
 
                 div.classList.add('carousel-item')
                 counter == 1 ? div.classList.add('active') : null;
-                img.classList.add('d-block','w-100')
+                img.classList.add('d-block', 'w-100')
                 img.alt = "Imagen del producto"
                 img.src = `${d.url}`
 
                 divCaption.classList.add('carousel-caption', 'd-block')
-                buttonImage.classList.add('btn','btn-danger')
+                buttonImage.classList.add('btn', 'btn-danger')
                 buttonImage.innerHTML = "<i class='bi bi-trash'></i>"
-                buttonImage.addEventListener('click',() => deleteImage(d.id))
+                buttonImage.addEventListener('click', () => deleteImage(d.id))
 
                 divCaption.appendChild(buttonImage)
                 div.appendChild(img)
@@ -250,20 +250,20 @@ const resetearModal = () => {
 
 const deleteImage = (id) => {
     Swal.fire({
-        icon : 'warning',
-        text : '¿Esta seguro que desea eliminar esta imagen?',
+        icon: 'warning',
+        text: '¿Esta seguro que desea eliminar esta imagen?',
         title: 'Confirmación',
         showCancelButton: true,
-        confirmButtonColor : '#591C32',
+        confirmButtonColor: '#E5533D',
         confirmButtonText: 'Si',
         cancelButtonText: 'Cancelar'
-    }).then( async (result) => {
-        if(result.isConfirmed){
+    }).then(async (result) => {
+        if (result.isConfirmed) {
             const url = `/products/image/${id}`
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const headers = new Headers({
                 'X-CSRF-TOKEN': csrfToken,
-                'Accept' :'aplication/json',
+                'Accept': 'aplication/json',
             })
             const body = new FormData()
             const config = {
@@ -273,31 +273,31 @@ const deleteImage = (id) => {
                 credentials: 'include'
             }
             try {
-                const respuesta = await fetch (url, config);
+                const respuesta = await fetch(url, config);
                 const data = await respuesta.json();
-        
+
                 console.log(data);
-                if (respuesta.status == 200){
+                if (respuesta.status == 200) {
                     Toast.fire({
-                        icon : 'success',
-                        title : 'Imagén eliminada'
+                        icon: 'success',
+                        title: 'Imagén eliminada'
                     })
                     modalImages.hide();
                     getProducts();
-                }else{
+                } else {
                     Toast.fire({
-                        icon : 'error',
-                        title : 'Contacte al administrador'
+                        icon: 'error',
+                        title: 'Contacte al administrador'
                     })
                 }
             }
-            catch (error){
+            catch (error) {
                 console.log(error);
             }
         }
 
     })
-} 
+}
 
 const updateProduct = async e => {
     e.preventDefault();
@@ -305,7 +305,7 @@ const updateProduct = async e => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const headers = new Headers({
         'X-CSRF-TOKEN': csrfToken,
-        'Accept' :'aplication/json',
+        'Accept': 'aplication/json',
     })
     const body = new FormData(formProduct)
     const config = {
@@ -315,15 +315,15 @@ const updateProduct = async e => {
         credentials: 'include'
     }
     try {
-        const respuesta = await fetch (url, config);
+        const respuesta = await fetch(url, config);
         const data = await respuesta.json();
         console.log(data);
         const elements = formProduct.querySelectorAll('input')
         const feedbacks = formProduct.querySelectorAll('[id$="Feedback"]')
-        elements.forEach(e=> e.classList.remove('is-invalid'))
+        elements.forEach(e => e.classList.remove('is-invalid'))
         feedbacks.forEach(f => f.textContent = '')
-        if(respuesta.status == 422){
-            const {errors} =data   
+        if (respuesta.status == 422) {
+            const { errors } = data
             for (const propiedad in errors) {
                 document.getElementById(propiedad).classList.add('is-invalid')
                 let contenido = '';
@@ -332,22 +332,22 @@ const updateProduct = async e => {
                 });
                 document.getElementById(propiedad + "Feedback").innerHTML = contenido
             }
-        }else if (respuesta.status == 200){
+        } else if (respuesta.status == 200) {
             Toast.fire({
-                icon : 'success',
-                title : 'Producto modificado correctamente'
+                icon: 'success',
+                title: 'Producto modificado correctamente'
             })
             getProducts();
             formProduct.reset();
             modalProduct.hide()
-        }else{
+        } else {
             Toast.fire({
-                icon : 'error',
-                title : 'Contacte al administrador'
+                icon: 'error',
+                title: 'Contacte al administrador'
             })
         }
     }
-    catch (error){
+    catch (error) {
         console.log(error);
     }
 }
@@ -355,20 +355,20 @@ const updateProduct = async e => {
 const deleteProduct = (e) => {
     let id = e.currentTarget.dataset.id
     Swal.fire({
-        icon : 'warning',
-        text : '¿Esta seguro que desea eliminar este producto?',
+        icon: 'warning',
+        text: '¿Esta seguro que desea eliminar este producto?',
         title: 'Confirmación',
         showCancelButton: true,
-        confirmButtonColor : '#591C32',
+        confirmButtonColor: '#E5533D',
         confirmButtonText: 'Si',
         cancelButtonText: 'Cancelar'
-    }).then( async (result) => {
-        if(result.isConfirmed){
+    }).then(async (result) => {
+        if (result.isConfirmed) {
             const url = `/products/${id}`
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const headers = new Headers({
                 'X-CSRF-TOKEN': csrfToken,
-                'Accept' :'aplication/json',
+                'Accept': 'aplication/json',
             })
             const body = new FormData()
             const config = {
@@ -378,35 +378,35 @@ const deleteProduct = (e) => {
                 credentials: 'include'
             }
             try {
-                const respuesta = await fetch (url, config);
+                const respuesta = await fetch(url, config);
                 const data = await respuesta.json();
-        
+
                 console.log(data);
-                if (respuesta.status == 200){
+                if (respuesta.status == 200) {
                     Toast.fire({
-                        icon : 'success',
-                        title : 'Producto eliminado'
+                        icon: 'success',
+                        title: 'Producto eliminado'
                     })
                     modalImages.hide();
                     getProducts();
-                }else{
+                } else {
                     Toast.fire({
-                        icon : 'error',
-                        title : 'Contacte al administrador'
+                        icon: 'error',
+                        title: 'Contacte al administrador'
                     })
                 }
             }
-            catch (error){
+            catch (error) {
                 console.log(error);
             }
         }
 
     })
-} 
+}
 
 formProduct.addEventListener('submit', guardarProducto);
 modalImagesElement.addEventListener('show.bs.modal', getImages)
-datatableProduct.on('click', '.btn-warning', editProduct )
-datatableProduct.on('click', '.btn-danger', deleteProduct )
-modalProductElement.addEventListener('show.bs.modal', resetearModal )
+datatableProduct.on('click', '.btn-warning', editProduct)
+datatableProduct.on('click', '.btn-danger', deleteProduct)
+modalProductElement.addEventListener('show.bs.modal', resetearModal)
 btnModificar.addEventListener('click', updateProduct)

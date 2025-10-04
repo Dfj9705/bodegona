@@ -12,13 +12,13 @@ class ReportController extends Controller
     {
         $id = $request->input('id');
         $sale = Sale::find($id);
-        $imagePath =  public_path('images/ea_logo.jpeg');
+        $imagePath = public_path('images/bodegona_logo.png');
         $pdf = PDF::loadView('pdf.receipt', compact('sale'), [], [
             'show_watermark_image' => TRUE,
             'watermark_image_path' => $imagePath,
             'default_font_size' => '12',
             'default_font' => 'arial',
-            'margin_top'=>10,
+            'margin_top' => 10,
             'orientation' => 'L',
             'format' => 'A5'
         ]);

@@ -7,10 +7,10 @@ return [
         'short_name' => 'Estilo Americano GT',
         'start_url' => '/',
         'background_color' => '#ffffff',
-        'theme_color' => '#591C32',
+        'theme_color' => '#E5533D',
         'display' => 'standalone',
-        'orientation'=> 'any',
-        'status_bar'=> 'black',
+        'orientation' => 'any',
+        'status_bar' => 'black',
         'icons' => [
             '72x72' => [
                 'path' => '/images/icons/ea_logo_72x72.png',

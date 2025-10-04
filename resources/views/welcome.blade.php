@@ -1,23 +1,23 @@
 @extends('layouts.app')
 @section('content')
-    
+
     <div class="row justify-content-center h-100 mt-5">
         <div class="col-11 mb-2 mb-lg-0 col-lg-4 rounded shadow p-0">
-            <img class="w-100" src="{{ asset('./images/ea_logo.jpeg') }}" alt="logo EA">
+            <img class="w-100" src="{{ asset('./images/bodegona_logo.png') }}" alt="logo EA">
         </div>
         <div class="col-lg-4 d-flex flex-column justify-content-center">
             @guest
             <h1 class="text-center">¡Bienvenido!</h1>
             <p class="text- lead text-center">Inicia sesión para acceder al sistema</p>
             <a href="{{ route('login') }}" class="btn btn-primary w-100">Iniciar sesión</a>
-            @else  
+            @else
             <div class="accordion" id="accordionMenu">
                 <h1 class="text-center">¡Bienvenido, {{ auth()->user()->name }}!</h1>
                 <p class="text- lead text-center">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="tituloDos">
                         <button class="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#submenuDos" aria-expanded="true" aria-controls="submenuDos">
-                            <i class="bi bi-boxes me-2"></i>Inventario 
+                            <i class="bi bi-boxes me-2"></i>Inventario
                         </button>
                     </h2>
                     <div id="submenuDos" class="accordion-collapse collapse show" aria-labelledby="tituloDos" data-bs-parent="#accordionMenu">
@@ -35,7 +35,7 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="tituloUno">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#submenuUno" aria-expanded="false" aria-controls="submenuUno">
-                            <i class="bi bi-gear me-2"></i>Administración 
+                            <i class="bi bi-gear me-2"></i>Administración
                         </button>
                     </h2>
                     <div id="submenuUno" class="accordion-collapse collapse" aria-labelledby="tituloUno" data-bs-parent="#accordionMenu">

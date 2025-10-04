@@ -305,7 +305,7 @@ const updateStatus = (e) => {
         text: '¿Esta seguro que desea realizar esta acción?',
         title: 'Confirmación',
         showCancelButton: true,
-        confirmButtonColor: '#591C32',
+        confirmButtonColor: '#E5533D',
         confirmButtonText: 'Si',
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
