@@ -48,13 +48,15 @@ const datatableProduct = new DataTable('#productTable', {
             title: 'Descripcion',
             data: 'description'
         },
-        // {
-        //     title : 'Imagenes',
-        //     data: 'id',
-        //     render : (data, type, row, meta) => {
-        //         return ` <button class="btn btn-info" ${row.images > 0 ? '' : 'disabled'} data-id="${data}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#modalImages" ><i class="bi bi-eye me-2"></i>Ver</button>`
-        //     }
-        // },
+        {
+            title: 'Imagenes',
+            data: 'id',
+            orderable: false,
+            searchable: false,
+            render: (data, type, row) => {
+                return ` <button class="btn btn-info" ${row.images > 0 ? '' : 'disabled'} data-id="${data}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#modalImages" ><i class="bi bi-eye me-2"></i>Ver</button>`
+            }
+        },
         {
             title: 'Opciones',
             data: 'id',
@@ -80,7 +82,7 @@ const guardarProducto = async (event) => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const headers = new Headers({
         'X-CSRF-TOKEN': csrfToken,
-        'Accept': 'aplication/json',
+        'Accept': 'application/json',
     })
     const body = new FormData(formProduct)
     const config = {
@@ -93,7 +95,7 @@ const guardarProducto = async (event) => {
         const respuesta = await fetch(url, config);
         const data = await respuesta.json();
         console.log(data);
-        const elements = formProduct.querySelectorAll('input')
+        const elements = formProduct.querySelectorAll('.form-control')
         const feedbacks = formProduct.querySelectorAll('[id$="Feedback"]')
         elements.forEach(e => e.classList.remove('is-invalid'))
         feedbacks.forEach(f => f.textContent = '')
@@ -135,7 +137,7 @@ const getProducts = async () => {
     const url = '/products'
     const headers = new Headers({
         'Content-Type': 'application/json',
-        'Accept': 'aplication/json',
+        'Accept': 'application/json',
     })
     const config = {
         method: 'GET',
@@ -177,7 +179,7 @@ const getImages = async e => {
     const url = `/products/${id}/images`
     const headers = new Headers({
         'Content-Type': 'application/json',
-        'Accept': 'aplication/json',
+        'Accept': 'application/json',
     })
     const config = {
         method: 'GET',
@@ -224,28 +226,33 @@ const getImages = async e => {
     }
 }
 
-const editProduct = (e) => {
-    let button = e.currentTarget;
-    formProduct.name.value = button.dataset.name
-    formProduct.price.value = button.dataset.price
-    formProduct.description.value = button.dataset.description
-    formProduct.brand_id.value = button.dataset.brand
-    createProductTitle.textContent = "Editar producto"
-    btnGuardar.style.display = 'none'
-    btnGuardar.disabled = true
-    btnModificar.style.display = ''
-    btnModificar.disabled = false
-    currentUpdateId = button.dataset.id
-
-}
-
-const resetearModal = () => {
+const resetearModal = (event) => {
+    const trigger = event.relatedTarget
     formProduct.reset();
-    createProductTitle.textContent = "Crear producto"
-    btnModificar.style.display = 'none'
-    btnModificar.disabled = true
-    btnGuardar.style.display = ''
-    btnGuardar.disabled = false
+    formProduct.querySelectorAll('.is-invalid').forEach(element => element.classList.remove('is-invalid'))
+    formProduct.querySelectorAll('[id$="Feedback"]').forEach(feedback => feedback.innerHTML = '')
+
+    if (trigger && trigger.classList.contains('btn-warning')) {
+        createProductTitle.textContent = "Editar producto"
+        btnGuardar.style.display = 'none'
+        btnGuardar.disabled = true
+        btnModificar.style.display = ''
+        btnModificar.disabled = false
+        currentUpdateId = trigger.dataset.id
+        formProduct.name.value = trigger.dataset.name ?? ''
+        formProduct.price.value = trigger.dataset.price ?? ''
+        const description = trigger.dataset.description
+        formProduct.description.value = description && description !== 'null' ? description : ''
+        const brand = trigger.dataset.brand
+        formProduct.brand_id.value = brand && brand !== 'null' ? brand : ''
+    } else {
+        createProductTitle.textContent = "Crear producto"
+        btnModificar.style.display = 'none'
+        btnModificar.disabled = true
+        btnGuardar.style.display = ''
+        btnGuardar.disabled = false
+        currentUpdateId = null
+    }
 }
 
 const deleteImage = (id) => {
@@ -263,7 +270,7 @@ const deleteImage = (id) => {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const headers = new Headers({
                 'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'aplication/json',
+                'Accept': 'application/json',
             })
             const body = new FormData()
             const config = {
@@ -305,7 +312,7 @@ const updateProduct = async e => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const headers = new Headers({
         'X-CSRF-TOKEN': csrfToken,
-        'Accept': 'aplication/json',
+        'Accept': 'application/json',
     })
     const body = new FormData(formProduct)
     const config = {
@@ -314,11 +321,12 @@ const updateProduct = async e => {
         body,
         credentials: 'include'
     }
+    btnModificar.disabled = true
     try {
         const respuesta = await fetch(url, config);
         const data = await respuesta.json();
         console.log(data);
-        const elements = formProduct.querySelectorAll('input')
+        const elements = formProduct.querySelectorAll('.form-control')
         const feedbacks = formProduct.querySelectorAll('[id$="Feedback"]')
         elements.forEach(e => e.classList.remove('is-invalid'))
         feedbacks.forEach(f => f.textContent = '')
@@ -350,6 +358,7 @@ const updateProduct = async e => {
     catch (error) {
         console.log(error);
     }
+    btnModificar.disabled = false
 }
 
 const deleteProduct = (e) => {
@@ -368,7 +377,7 @@ const deleteProduct = (e) => {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const headers = new Headers({
                 'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'aplication/json',
+                'Accept': 'application/json',
             })
             const body = new FormData()
             const config = {
@@ -406,7 +415,6 @@ const deleteProduct = (e) => {
 
 formProduct.addEventListener('submit', guardarProducto);
 modalImagesElement.addEventListener('show.bs.modal', getImages)
-datatableProduct.on('click', '.btn-warning', editProduct)
 datatableProduct.on('click', '.btn-danger', deleteProduct)
 modalProductElement.addEventListener('show.bs.modal', resetearModal)
 btnModificar.addEventListener('click', updateProduct)

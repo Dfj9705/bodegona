@@ -40,24 +40,19 @@ class ProductController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'price' => ['required', 'decimal:2'],
                 'brand_id' => ['required', 'exists:brands,id'],
-                // 'images' =>['image','mimes:jpeg,jpg,png','max:32000'] 
+                'images' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
             ]);
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
             $creado = Product::create($request->all());
-            $idProducto = $creado->id;
-            // $images = $request->file('images');
-            // if($request->hasFile('images')){
-            //     $extension = $request->file('images')->extension();
-            //     $name = time() . '.' . $extension;
-            //     $stored = Storage::disk('digitalocean')->putFileAs('products', $request->file('images'), $name , 'public');
-            //     $url = Storage::disk('digitalocean')->url($name);
-            //     $imagenBD = new Image();
-            //     $imagenBD->url = $url;
-            //     $imagenBD->product_id = $idProducto;
-            //     $imagenBD->save();
-            // }
+
+            if ($request->hasFile('images')) {
+                $path = $request->file('images')->store('products', 'public');
+                $creado->images()->create([
+                    'url' => $path,
+                ]);
+            }
     
             return response()->json(['data' => $creado], 200);
         } catch (Exception $e) {
@@ -99,28 +94,19 @@ class ProductController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'price' => ['required', 'decimal:2'],
                 'brand_id' => ['required', 'exists:brands,id'],
-                // 'images.*' =>['image','mimes:jpeg,jpg,png','max:32000'] 
+                'images' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
             ]);
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
-            // $images = $request->file('images');
             $product->fill($request->all());
             $actualizado = $product->save();
-            $idProducto = $product->id;
-            // if($request->hasFile('images')){
-            //     $images = $request->file('images');
-            //     foreach($images as $image){
-
-            //         $nombreAleatorio = uniqid() . '_' . time() . '.' . $image->getClientOriginalExtension();
-            //         $rutaImagen = $image->storeAs('public/images', $nombreAleatorio);
-            //         $imagenBD = new Image();
-            //         $imagenBD->url = $rutaImagen;
-            //         $imagenBD->product_id = $idProducto;
-            //         $imagenBD->save();
-                   
-            //     }
-            // }
+            if ($request->hasFile('images')) {
+                $path = $request->file('images')->store('products', 'public');
+                $product->images()->create([
+                    'url' => $path,
+                ]);
+            }
     
             return response()->json(['data' => $actualizado], 200);
         } catch (Exception $e) {
@@ -136,11 +122,11 @@ class ProductController extends Controller
         try{
             $images = $product->images;
             foreach ($images as $image){
-                if (Storage::exists($image->url)) {
+                if (Storage::disk('public')->exists($image->url)) {
                     $image->delete();
-                    Storage::delete($image->url);
-                
-                } 
+                    Storage::disk('public')->delete($image->url);
+
+                }
             }
             $product->delete();
             return response()->json($product, 200);
@@ -157,7 +143,7 @@ class ProductController extends Controller
         $images = [];
         $i = 0;
         foreach($product->images as $img){
-            $images[$i]['url'] = Storage::url($img->url);
+            $images[$i]['url'] = Storage::disk('public')->url($img->url);
             $images[$i]['id'] = $img->id;
             $i++;
         }
@@ -169,11 +155,11 @@ class ProductController extends Controller
     {
         try{
 
-            if (Storage::exists($image->url)) {
+            if (Storage::disk('public')->exists($image->url)) {
                 $image->delete();
-                Storage::delete($image->url);
-               
-            } 
+                Storage::disk('public')->delete($image->url);
+
+            }
             return response()->json($image);
         }catch(Exception $e){
             return response()->json(['error' => $e->getMessage() ], 500);

@@ -55,20 +55,21 @@
                             <div class="invalid-feedback" id="descriptionFeedback"></div>
                         </div>
                     </div>
-                    {{-- <div class="row mb-2">
+                    <div class="row mb-2">
                         <div class="col">
-                            <label for="images">Imágenes del producto</label>
+                            <label for="images">Imagen del producto (opcional)</label>
                             <input type="file" accept="image/*" name="images" id="images" class="form-control">
+                            <div class="form-text">Formatos permitidos: JPG, PNG o WEBP. Tamaño máximo 5&nbsp;MB.</div>
                             <div class="invalid-feedback" id="imagesFeedback"></div>
                         </div>
 
-                    </div> --}}
+                    </div>
                 </form>
  
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button id="btnModificar" class="btn btn-warning">Modificar</button>
+                <button type="button" id="btnModificar" class="btn btn-warning">Modificar</button>
                 <button type="submit" form="formProduct" id="btnGuardar" class="btn btn-primary"><span class="spinner-border spinner-border-sm me-2" role="status" id="spinnerGuardar" aria-hidden="true"></span>Guardar</button>
             </div>
         </div>
