@@ -20,6 +20,13 @@
         </div>
     </div>
 
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    @endif
+
     <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between mb-4">
         <div>
             <h2 class="fw-bold mb-1">Catálogo de productos</h2>
@@ -43,7 +50,7 @@
                         $imageUrl = $image
                             ? (\Illuminate\Support\Str::startsWith($image->url, ['http://', 'https://'])
                                 ? $image->url
-                                : \Illuminate\Support\Facades\Storage::url($image->url))
+                                : \Illuminate\Support\Facades\Storage::disk('public')->url($image->url))
                             : asset('images/bodegona_logo.png');
                     @endphp
                     <div class="ratio ratio-4x3 bg-light">
@@ -64,7 +71,13 @@
                             @auth
                                 <a href="{{ route('products.view') }}" class="btn btn-sm btn-outline-primary">Editar</a>
                             @else
-                                <span class="text-muted small"><i class="bi bi-basket me-1"></i>Disponible</span>
+                                <form action="{{ route('cart.add', $product) }}" method="POST" class="d-flex align-items-center gap-2">
+                                    @csrf
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-cart-plus me-1"></i>Agregar
+                                    </button>
+                                </form>
                             @endauth
                         </div>
                     </div>

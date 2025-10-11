@@ -61,7 +61,21 @@
                     @endauth
 
                     <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto align-items-md-center">
+                        @php
+                            $cartCount = collect(session('cart', []))->sum('quantity');
+                        @endphp
+                        <li class="nav-item me-md-3">
+                            <a class="nav-link position-relative" href="{{ route('cart.index') }}">
+                                <i class="bi bi-cart3 me-1"></i>Carrito
+                                @if ($cartCount > 0)
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ $cartCount }}
+                                        <span class="visually-hidden">productos en el carrito</span>
+                                    </span>
+                                @endif
+                            </a>
+                        </li>
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))
