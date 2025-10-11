@@ -30,7 +30,7 @@ class AppControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('brand.view'))
             ->assertOk()
-            ->assertViewIs('brands/index');
+            ->assertViewIs('brands.index');
     }
 
     public function test_non_admin_user_is_redirected_from_brand_page(): void
@@ -52,7 +52,7 @@ class AppControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('movements.view'))
             ->assertOk()
-            ->assertViewIs('movement/index')
+            ->assertViewIs('movement.index')
             ->assertViewHas('products', function ($products) use ($product) {
                 return $products->contains($product);
             });
