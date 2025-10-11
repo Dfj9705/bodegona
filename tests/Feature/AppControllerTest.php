@@ -57,4 +57,10 @@ class AppControllerTest extends TestCase
                 return $products->contains($product);
             });
     }
+
+    public function test_unauthenticated_user_is_redirected_from_movement_page(): void
+    {
+        $this->get(route('movements.view'))
+            ->assertRedirect(route('login'));
+    }
 }
