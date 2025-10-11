@@ -69,7 +69,7 @@ class AppControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('user.view'))
             ->assertOk()
-            ->assertViewIs('users/index')
+            ->assertViewIs('users.index')
             ->assertViewHas('roles', function ($roles) use ($adminRole, $sellerRole) {
                 return $roles->contains($adminRole) && $roles->contains($sellerRole);
             });
@@ -87,7 +87,7 @@ class AppControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('products.view'))
             ->assertOk()
-            ->assertViewIs('products/index')
+            ->assertViewIs('products.index')
             ->assertViewHas('brands', function ($brands) use ($brand) {
                 return $brands->contains($brand);
             });
@@ -103,7 +103,7 @@ class AppControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('chart.view'))
             ->assertOk()
-            ->assertViewIs('chart/index');
+            ->assertViewIs('chart.index');
     }
 
     public function test_non_admin_user_is_redirected_from_user_page(): void
