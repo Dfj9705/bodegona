@@ -1,15 +1,15 @@
 <?php
 
-namespace Tests\\Feature;
+namespace Tests\Feature;
 
-use App\\Models\\Brand;
-use App\\Models\\Movement;
-use App\\Models\\Product;
-use App\\Models\\User;
-use Illuminate\\Foundation\\Testing\\RefreshDatabase;
-use Spatie\\Permission\\Models\\Role;
-use Spatie\\Permission\\PermissionRegistrar;
-use Tests\\TestCase;
+use App\Models\Brand;
+use App\Models\Movement;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
+use Tests\TestCase;
 
 class JsonEndpointsTest extends TestCase
 {
@@ -107,8 +107,8 @@ class JsonEndpointsTest extends TestCase
                 'name' => $product->name,
             ])
             ->assertJsonFragment([
-                'ingresos' => '5',
-                'egresos' => '2',
+                'ingresos' => 5,
+                'egresos' => 2,
             ]);
     }
 
