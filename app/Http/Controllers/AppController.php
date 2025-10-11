@@ -11,7 +11,9 @@ class AppController extends Controller
 {
     public function welcome()
     {
-        return view('welcome');
+        $products = Product::with(['brand', 'images'])->orderBy('name')->get();
+
+        return view('welcome', compact('products'));
     }
     public function user()
     {
