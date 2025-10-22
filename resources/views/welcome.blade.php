@@ -44,18 +44,48 @@
     <div class="row g-4">
         @forelse ($products as $product)
             <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                <div class="card h-100 shadow-sm border-0">
+                <div class="card h-100 shadow-sm border-0 overflow-hidden">
                     @php
-                        $image = $product->images->first();
-                        $imageUrl = $image
-                            ? (\Illuminate\Support\Str::startsWith($image->url, ['http://', 'https://'])
-                                ? $image->url
-                                : \Illuminate\Support\Facades\Storage::disk('public')->url($image->url))
-                            : asset('images/bodegona_logo.png');
+                        $imageUrls = $product->images
+                            ->map(function ($image) {
+                                return \Illuminate\Support\Str::startsWith($image->url, ['http://', 'https://'])
+                                    ? $image->url
+                                    : \Illuminate\Support\Facades\Storage::disk('public')->url($image->url);
+                            })
+                            ->values();
                     @endphp
-                    <div class="ratio ratio-4x3 bg-light">
-                        <img src="{{ $imageUrl }}" class="w-100 h-100 object-fit-cover rounded-top" alt="Imagen de {{ $product->name }}">
-                    </div>
+                    @if ($imageUrls->isNotEmpty())
+                        <div class="ratio ratio-4x3 bg-light rounded-top overflow-hidden">
+                            <div id="productCarousel{{ $product->id }}" class="carousel slide h-100" data-bs-ride="false">
+                                <div class="carousel-inner h-100">
+                                    @foreach ($imageUrls as $url)
+                                        <div class="carousel-item h-100 {{ $loop->first ? 'active' : '' }}">
+                                            <img src="{{ $url }}" class="d-block w-100 h-100 object-fit-cover" alt="Imagen {{ $loop->iteration }} de {{ $product->name }}">
+                                        </div>
+                                    @endforeach
+                                </div>
+                                @if ($imageUrls->count() > 1)
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel{{ $product->id }}" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Anterior</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel{{ $product->id }}" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Siguiente</span>
+                                    </button>
+                                    <div class="carousel-indicators">
+                                        @foreach ($imageUrls as $indicatorIndex => $url)
+                                            <button type="button" data-bs-target="#productCarousel{{ $product->id }}" data-bs-slide-to="{{ $indicatorIndex }}" class="{{ $loop->first ? 'active' : '' }}" @if ($loop->first) aria-current="true" @endif aria-label="Imagen {{ $indicatorIndex + 1 }}"></button>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        <div class="ratio ratio-4x3 bg-light rounded-top overflow-hidden">
+                            <img src="{{ asset('images/bodegona_logo.png') }}" class="w-100 h-100 object-fit-cover" alt="Imagen de {{ $product->name }}">
+                        </div>
+                    @endif
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h5 class="card-title mb-0">{{ $product->name }}</h5>
