@@ -13,7 +13,8 @@ const modalProductElement = document.getElementById('modalCreateProduct');
 const modalProduct = new Modal(modalProductElement)
 const modalImagesElement = document.getElementById('modalImages');
 const modalImages = new Modal(modalImagesElement)
-const bodyCarousel = document.getElementById('bodyCarousel');
+const imagesContainer = document.getElementById('imagesContainer');
+const imageTitle = document.getElementById('imageTitle');
 const createProductTitle = document.getElementById('createProductTitle')
 const btnGuardar = document.getElementById('btnGuardar')
 const btnModificar = document.getElementById('btnModificar')
@@ -23,6 +24,7 @@ btnModificar.disabled = true
 
 let counter = 1;
 let currentUpdateId;
+let currentImagesProductId;
 spinnerGuardar.style.display = 'none'
 const datatableProduct = new DataTable('#productTable', {
     data: null,
@@ -173,10 +175,65 @@ const getProducts = async () => {
 
 getProducts();
 
-const getImages = async e => {
-    const id = e.relatedTarget.dataset.id
+const showImagesMessage = (message) => {
+    imagesContainer.innerHTML = ''
+    const messageCol = document.createElement('div')
+    messageCol.classList.add('col-12', 'text-center', 'text-muted')
+    messageCol.textContent = message
+    imagesContainer.appendChild(messageCol)
+}
 
-    const url = `/products/${id}/images`
+const renderImages = (images = []) => {
+    imagesContainer.innerHTML = ''
+
+    if (!images || images.length === 0) {
+        showImagesMessage('No hay imágenes registradas para este producto.')
+        return
+    }
+
+    const fragment = document.createDocumentFragment()
+
+    images.forEach(image => {
+        const column = document.createElement('div')
+        column.classList.add('col-12', 'col-sm-6', 'col-md-4')
+
+        const card = document.createElement('div')
+        card.classList.add('card', 'h-100', 'shadow-sm')
+
+        const img = document.createElement('img')
+        img.classList.add('card-img-top', 'object-fit-cover')
+        img.alt = 'Imagen del producto'
+        img.src = image.url
+        img.loading = 'lazy'
+        img.style.height = '200px'
+
+        const cardBody = document.createElement('div')
+        cardBody.classList.add('card-body', 'd-flex', 'justify-content-center')
+
+        const deleteButton = document.createElement('button')
+        deleteButton.classList.add('btn', 'btn-danger', 'btn-sm')
+        deleteButton.type = 'button'
+        deleteButton.innerHTML = "<i class='bi bi-trash me-2'></i>Eliminar"
+        deleteButton.addEventListener('click', () => deleteImage(image.id))
+
+        cardBody.appendChild(deleteButton)
+        card.appendChild(img)
+        card.appendChild(cardBody)
+        column.appendChild(card)
+
+        fragment.appendChild(column)
+    })
+
+    imagesContainer.appendChild(fragment)
+}
+
+const fetchProductImages = async () => {
+    if (!currentImagesProductId) {
+        showImagesMessage('Selecciona un producto para visualizar sus imágenes.')
+        return
+    }
+
+    const url = `/products/${currentImagesProductId}/images`
     const headers = new Headers({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -186,45 +243,41 @@ const getImages = async e => {
         headers,
         credentials: 'include'
     }
+
     try {
-        const respuesta = await fetch(url, config);
-        const data = await respuesta.json();
-        bodyCarousel.innerHTML = '';
-        if (data) {
-            const fragment = document.createDocumentFragment();
-            let counter = 1;
-            data.forEach(d => {
-                const div = document.createElement('div')
-                const divCaption = document.createElement('div')
-                const buttonImage = document.createElement('button')
-                const img = document.createElement('img')
-
-
-                div.classList.add('carousel-item')
-                counter == 1 ? div.classList.add('active') : null;
-                img.classList.add('d-block', 'w-100')
-                img.alt = "Imagen del producto"
-                img.src = `${d.url}`
-
-                divCaption.classList.add('carousel-caption', 'd-block')
-                buttonImage.classList.add('btn', 'btn-danger')
-                buttonImage.innerHTML = "<i class='bi bi-trash'></i>"
-                buttonImage.addEventListener('click', () => deleteImage(d.id))
-
-                divCaption.appendChild(buttonImage)
-                div.appendChild(img)
-                div.appendChild(divCaption)
-                fragment.appendChild(div)
-                console.log(d);
-                counter++
-            })
-            bodyCarousel.appendChild(fragment)
-
+        const respuesta = await fetch(url, config)
+        if (!respuesta.ok) {
+            throw new Error('Error al obtener las imágenes')
         }
+        const data = await respuesta.json()
+        renderImages(Array.isArray(data) ? data : [])
     } catch (error) {
-        console.log(error);
+        console.log(error)
+        showImagesMessage('No fue posible cargar las imágenes del producto.')
     }
 }
+
+const handleImagesModalShow = async e => {
+    const trigger = e.relatedTarget
+    currentImagesProductId = trigger?.dataset.id
+    const productName = trigger?.dataset.name
+
+    if (productName) {
+        imageTitle.textContent = `Imágenes del producto: ${productName}`
+    } else {
+        imageTitle.textContent = 'Imágenes del producto'
+    }
+
+    await fetchProductImages()
+}
+
+const resetImagesModal = () => {
+    showImagesMessage('Selecciona un producto para visualizar sus imágenes.')
+    currentImagesProductId = null
+    imageTitle.textContent = 'Imágenes del producto'
+}
+
+resetImagesModal()
 
 const resetearModal = (event) => {
     const trigger = event.relatedTarget
@@ -287,9 +340,9 @@ const deleteImage = (id) => {
                 if (respuesta.status == 200) {
                     Toast.fire({
                         icon: 'success',
-                        title: 'Imagén eliminada'
+                        title: 'Imagen eliminada'
                     })
-                    modalImages.hide();
+                    await fetchProductImages();
                     getProducts();
                 } else {
                     Toast.fire({
@@ -414,7 +467,8 @@ const deleteProduct = (e) => {
 }
 
 formProduct.addEventListener('submit', guardarProducto);
-modalImagesElement.addEventListener('show.bs.modal', getImages)
+modalImagesElement.addEventListener('show.bs.modal', handleImagesModalShow)
+modalImagesElement.addEventListener('hidden.bs.modal', resetImagesModal)
 datatableProduct.on('click', '.btn-danger', deleteProduct)
 modalProductElement.addEventListener('show.bs.modal', resetearModal)
 btnModificar.addEventListener('click', updateProduct)
