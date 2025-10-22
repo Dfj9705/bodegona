@@ -88,4 +88,70 @@ class CartController extends Controller
 
         return redirect()->route('cart.index')->with('success', 'Carrito vaciado correctamente.');
     }
+
+    public function checkout(Request $request)
+    {
+        $cart = collect($request->session()->get('cart', []));
+
+        if ($cart->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
+        }
+
+        $total = $cart->reduce(fn ($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
+
+        return view('cart.checkout', [
+            'cart' => $cart,
+            'total' => $total,
+            'itemCount' => $cart->sum('quantity'),
+        ]);
+    }
+
+    public function processCheckout(Request $request): RedirectResponse
+    {
+        $cart = collect($request->session()->get('cart', []));
+
+        if ($cart->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
+        }
+
+        $data = $request->validate([
+            'customer_name' => ['required', 'string', 'max:255'],
+            'customer_email' => ['required', 'email', 'max:255'],
+            'payment_method' => ['required', 'in:card,cash'],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $orderReference = Str::upper(Str::random(8));
+        $total = $cart->reduce(fn ($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
+
+        $request->session()->put('checkout_confirmation', [
+            'reference' => $orderReference,
+            'name' => $data['customer_name'],
+            'email' => $data['customer_email'],
+            'payment_method' => $data['payment_method'],
+            'payment_method_label' => $data['payment_method'] === 'card'
+                ? 'Tarjeta de crédito o débito'
+                : 'Contraentrega en efectivo',
+            'notes' => $data['notes'] ?? null,
+            'total' => $total,
+            'items' => $cart->values()->all(),
+        ]);
+
+        $request->session()->forget('cart');
+
+        return redirect()->route('cart.checkout.confirmation');
+    }
+
+    public function confirmation(Request $request)
+    {
+        $confirmation = $request->session()->pull('checkout_confirmation');
+
+        if (!$confirmation) {
+            return redirect()->route('cart.index');
+        }
+
+        return view('cart.confirmation', [
+            'confirmation' => $confirmation,
+        ]);
+    }
 }

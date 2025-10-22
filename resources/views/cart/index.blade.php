@@ -18,6 +18,13 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-octagon me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    @endif
+
     @if ($cart->isEmpty())
         <div class="card shadow-sm">
             <div class="card-body text-center py-5">
@@ -104,7 +111,7 @@
                             <span class="fw-semibold">Total a pagar</span>
                             <span class="fw-bold fs-5 text-primary">${{ number_format($total, 2) }}</span>
                         </div>
-                        <a href="#" class="btn btn-primary w-100 mb-2" role="button"><i class="bi bi-credit-card me-2"></i>Proceder al pago</a>
+                        <a href="{{ route('cart.checkout') }}" class="btn btn-primary w-100 mb-2" role="button"><i class="bi bi-credit-card me-2"></i>Proceder al pago</a>
                         <a href="{{ route('welcome') }}" class="btn btn-outline-primary w-100"><i class="bi bi-bag me-2"></i>Seguir comprando</a>
                         <form action="{{ route('cart.clear') }}" method="POST" class="mt-3">
                             @csrf

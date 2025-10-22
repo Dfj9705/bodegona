@@ -30,6 +30,9 @@ Route::post('/cart/{product}', [CartController::class, 'add'])->name('cart.add')
 Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/{product}', [CartController::class, 'remove'])->name('cart.remove');
 Route::delete('/cart', [CartController::class, 'clear'])->name('cart.clear');
+Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/checkout', [CartController::class, 'processCheckout'])->name('cart.checkout.process');
+Route::get('/checkout/confirmation', [CartController::class, 'confirmation'])->name('cart.checkout.confirmation');
 
 
 
