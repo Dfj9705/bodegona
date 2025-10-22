@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CheckoutConfirmation;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -124,7 +126,7 @@ class CartController extends Controller
         $orderReference = Str::upper(Str::random(8));
         $total = $cart->reduce(fn ($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
 
-        $request->session()->put('checkout_confirmation', [
+        $confirmationData = [
             'reference' => $orderReference,
             'name' => $data['customer_name'],
             'email' => $data['customer_email'],
@@ -135,7 +137,18 @@ class CartController extends Controller
             'notes' => $data['notes'] ?? null,
             'total' => $total,
             'items' => $cart->values()->all(),
-        ]);
+        ];
+
+        $request->session()->put('checkout_confirmation', $confirmationData);
+
+        $pendingMail = Mail::to($data['customer_email']);
+        $notificationEmails = config('checkout.notification_emails');
+
+        if (!empty($notificationEmails)) {
+            $pendingMail->bcc($notificationEmails);
+        }
+
+        $pendingMail->send(new CheckoutConfirmation($confirmationData));
 
         $request->session()->forget('cart');
 
